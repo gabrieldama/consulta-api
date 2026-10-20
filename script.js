@@ -1,69 +1,46 @@
-const cepInput = document.getElementById('cep');
-const cepMessage = document.getElementById('cep-mensagem');
-const addressFields = {
+const campoCep = document.getElementById('cep');
+const mensagemCep = document.getElementById('cep-mensagem');
+const camposEndereco = {
     rua: document.getElementById('rua'),
     bairro: document.getElementById('bairro'),
     cidade: document.getElementById('cidade'),
     uf: document.getElementById('uf')
 };
 
-let currentRequest;
-
-function clearAddress() {
-    Object.values(addressFields).forEach(field => {
-        field.value = '';
-    });
+function mostrarMensagem(texto) {
+    mensagemCep.textContent = texto;
+    campoCep.setAttribute('aria-invalid', texto ? 'true' : 'false');
 }
 
-function showCepMessage(message) {
-    cepMessage.textContent = message;
-    cepInput.setAttribute('aria-invalid', message ? 'true' : 'false');
-}
+campoCep.addEventListener('blur', async () => {
+    const cep = campoCep.value.replace(/\D/g, '');
 
-cepInput.addEventListener('blur', async () => {
-    const cep = cepInput.value.replace(/\D/g, '');
-    currentRequest?.abort();
-    clearAddress();
-    showCepMessage('');
+    Object.values(camposEndereco).forEach(campo => campo.value = '');
+    mostrarMensagem('');
 
-    if (!cep) {
-        return;
-    }
+    if (!cep) return;
 
     if (!/^\d{8}$/.test(cep)) {
-        showCepMessage('CEP incorreto. Informe os 8 números do CEP.');
+        mostrarMensagem('CEP incorreto. Informe os 8 números do CEP.');
         return;
     }
 
-    currentRequest = new AbortController();
-
     try {
-        const response = await fetch(
-            `https://viacep.com.br/ws/${cep}/json/`,
-            { signal: currentRequest.signal }
-        );
+        const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        if (!resposta.ok) throw new Error('Falha ao consultar o CEP.');
 
-        if (!response.ok) {
-            throw new Error(`Falha na consulta do CEP: ${response.status}`);
-        }
-
-        const address = await response.json();
-
-        if (address.erro) {
-            showCepMessage('CEP não encontrado. Confira o número e tente novamente.');
+        const endereco = await resposta.json();
+        if (endereco.erro) {
+            mostrarMensagem('CEP não encontrado. Confira o número e tente novamente.');
             return;
         }
 
-        addressFields.rua.value = address.logradouro || '';
-        addressFields.bairro.value = address.bairro || '';
-        addressFields.cidade.value = address.localidade || '';
-        addressFields.uf.value = address.uf || '';
-    } catch (error) {
-        if (error.name === 'AbortError') {
-            return;
-        }
-
-        showCepMessage('Não foi possível consultar o CEP. Tente novamente.');
-        console.error(error);
+        camposEndereco.rua.value = endereco.logradouro || '';
+        camposEndereco.bairro.value = endereco.bairro || '';
+        camposEndereco.cidade.value = endereco.localidade || '';
+        camposEndereco.uf.value = endereco.uf || '';
+    } catch (erro) {
+        mostrarMensagem('Não foi possível consultar o CEP. Tente novamente.');
+        console.error(erro);
     }
 });
