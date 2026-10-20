@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Endereço</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="caixa">
+        <form novalidate>
+            <header class="cabecalho">
+                <h1>Consulte seu endereço</h1>
+            </header>
+
+            <div class="campo">
+                <label for="cep">CEP</label>
+                <input class="entrada" name="cep" type="text" id="cep"
+                    inputmode="numeric" autocomplete="postal-code" maxlength="9"
+                    aria-describedby="cep-mensagem">
+                <p class="mensagem" id="cep-mensagem" aria-live="polite"></p>
+            </div>
+
+            <div class="campo">
+                <label for="rua">Rua / Logradouro</label>
+                <input class="entrada" name="rua" type="text" id="rua"
+                    autocomplete="address-line1">
+            </div>
+
+            <div class="campo">
+                <label for="bairro">Bairro</label>
+                <input class="entrada" name="bairro" type="text" id="bairro">
+            </div>
+
+                <div class="campo">
+                    <label for="cidade">Cidade</label>
+                    <input class="entrada" name="cidade" type="text" id="cidade"
+                        autocomplete="address-level2">
+                </div>
+                <div class="campo">
+                    <label for="uf">Estado</label>
+                    <input class="entrada" name="uf" type="text" id="uf"
+                        autocomplete="address-level1" maxlength="2" 
+                </div>
+        </form>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
